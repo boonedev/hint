@@ -11,7 +11,7 @@ import * as url from 'url';
 import { promisify } from 'util';
 import * as zlib from 'zlib';
 
-import fetch, {RequestInit} from 'node-fetch';
+import fetch, { RequestInit } from 'node-fetch';
 import * as https from 'https';
 import * as iconv from 'iconv-lite';
 import parseDataURL = require('data-urls'); // Using `require` as `data-urls` exports a function.
@@ -249,22 +249,52 @@ export class Requester {
                         isHTTPS = true;
                     }
 
-                    let agent;
+                    
+                    let agent: any;
 
+                    
                     if (this._options.strictSSL || isHTTPS) {
                         let httpsAgentOptions;
 
                         // This might be set explicitely to false, so we need to validate only if it has a value.
                         if (this._options.rejectUnauthorized !== undefined) {
-                            httpsAgentOptions = {rejectUnauthorized: this._options.rejectUnauthorized};
+                            httpsAgentOptions = { rejectUnauthorized: this._options.rejectUnauthorized };
                         }
 
                         const httpsAgent = new https.Agent(httpsAgentOptions);
 
                         agent = httpsAgent;
                     }
+                    
+                    // Helper to actually perform a fetch
+                    const fetchWithMethod = async (method: 'HEAD' | 'GET') => {
+                        const requestOptions = {
+                            ...this._options,
+                            agent: agent || false,
+                            method
+                        };
 
-                    const response = await fetch(uriString, {...this._options, agent});
+                        return await fetch(uriString, requestOptions);
+                    };
+
+                    let response;
+                
+                    if ((this._options.method || '').toUpperCase() === 'HEAD') {
+                        try {
+                            response = await fetchWithMethod('HEAD');
+
+                            // If HEAD response is not OK (e.g., 404, 405, etc.), fallback
+                            if (!response.ok || response.status >= 400) {
+                                debug(`HEAD request failed with status ${response.status}, retrying with GET`);
+                                response = await fetchWithMethod('GET');
+                            }
+                        } catch (e: any) {
+                            debug(`HEAD request errored, retrying with GET: ${e.message}`);
+                            response = await fetchWithMethod('GET');
+                        }
+                    } else {
+                        response = await fetchWithMethod((this._options.method as any) || 'GET');
+                    }
 
                     rawBodyResponse = await response.buffer();
 
@@ -299,7 +329,7 @@ export class Requester {
                             const results = await getUri(newUri);
 
                             return resolve(results);
-                        } catch (e){
+                        } catch (e) {
                             return reject(e);
                         }
                     }
@@ -310,7 +340,7 @@ export class Requester {
                     Array.from(response.headers, ([name, value]) => {
                         responseHeaders[name] = value;
 
-                        return {name, value};
+                        return { name, value };
                     });
 
                     if (this._options.headers) {
