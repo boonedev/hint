@@ -1,0 +1,50 @@
+{
+    "connector": {
+        "name": "puppeteer",
+        "options": {
+            "waitUntil": "networkidle2",
+            "headless": true
+        }
+    },
+    "hintsTimeout": 120000,
+    "hints": {
+        "http-compression": "off",
+        "performance-budget": "off",
+        "no-bom": "off",
+        "ssllabs": "off",
+        "no-p3p": "off",
+        "no-broken-links": [
+            "error",
+            {
+                "method": "HEAD"
+            }
+        ],
+        "apple-touch-icons": "warning",
+        "button-type": "warning",
+        "content-type": "warning",
+        "disown-opener": "warning",
+        "highest-available-document-mode": "warning",
+        "html-checker": "warning",
+        "http-cache": "warning",
+        "image-optimization-cloudinary": "off",
+        "manifest-app-name": "warning",
+        "manifest-exists": "warning",
+        "manifest-file-extension": "warning",
+        "manifest-is-valid": "warning",
+        "meta-charset-utf-8": "warning",
+        "meta-viewport": "warning",
+        "minified-js": "warning",
+        "no-disallowed-headers": "warning",
+        "no-friendly-error-pages": "warning",
+        "no-html-only-headers": "warning",
+        "no-http-redirects": "warning",
+        "no-protocol-relative-urls": "warning",
+        "no-vulnerable-javascript-libraries": "warning",
+        "sri": "warning",
+        "strict-transport-security": "warning",
+        "stylesheet-limits": "warning",
+        "validate-set-cookie-header": "warning",
+        "x-content-type-options": "warning"
+       
+    }
+}
