@@ -204,6 +204,7 @@ export default class PuppeteerConnector implements IConnector {
         const resource = response.url();
         const isTarget = response.request().isNavigationRequest();
         const status = response.status();
+        const resourceType = response.request().resourceType();
 
         debug(`Response received: ${resource}`);
 
@@ -222,6 +223,8 @@ export default class PuppeteerConnector implements IConnector {
 
         const { name, payload } = event;
 
+        payload.resourceType = resourceType;
+
         if (isTarget) {
             this._targetBody = payload.response.body.content;
             this._targetNetworkData = payload;
@@ -230,6 +233,7 @@ export default class PuppeteerConnector implements IConnector {
                 this._originalDocument = createHTMLDocument(this._targetBody!, resource);
             }
         }
+
 
         await this._engine.emitAsync(name, payload);
 

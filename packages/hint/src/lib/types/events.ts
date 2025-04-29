@@ -26,6 +26,7 @@ export type FetchEnd = Event & {
     request: Request;
     /** The response sent while fetching the target. */
     response: Response;
+    responseType?: String;
 };
 
 /** The object emitted on `fetch::error::*` */
