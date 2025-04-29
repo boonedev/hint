@@ -209,12 +209,20 @@ export default class NoDisallowedHeadersHint implements IHint {
         };
 
         const validate = (event: FetchEnd) => {
+
             // This check does not make sense for data URI.
             if (isDataURI(event.resource)) {
                 debug(`Check does not apply for data URI: ${event.resource}`);
 
                 return;
             }
+
+
+            // Only look at the header on main document (not images, scripts, styles etc)
+            if (event.resourceType !== 'document') {
+                return;
+            }
+
 
             validateGeneralHeaders(event);
             validateServerHeader(event);
